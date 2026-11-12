@@ -6,7 +6,7 @@
     <title>3D Extrude (Екструзія) — Інтерактивний курс</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js CDN -->
+    <!-- Three.js CDN (Основний + Резервний) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -95,13 +95,13 @@
             </div>
             
             <nav class="flex items-center gap-2 bg-blender-dark p-1 rounded-lg border border-blender-border">
-                <button onclick="switchTab('theory')" id="nav-theory" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all bg-blender-accent text-white shadow">
+                <button type="button" onclick="switchTab('theory')" id="nav-theory" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all bg-blender-accent text-white shadow cursor-pointer">
                     <i class="fa-solid fa-book-open mr-1.5"></i>Теорія та 3D-Студія
                 </button>
-                <button onclick="switchTab('challenge')" id="nav-challenge" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-300 hover:text-white transition-all">
+                <button type="button" onclick="switchTab('challenge')" id="nav-challenge" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-300 hover:text-white transition-all cursor-pointer">
                     <i class="fa-solid fa-gamepad mr-1.5"></i>Практика (5 Рівнів)
                 </button>
-                <button onclick="switchTab('quiz')" id="nav-quiz" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-300 hover:text-white transition-all">
+                <button type="button" onclick="switchTab('quiz')" id="nav-quiz" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-300 hover:text-white transition-all cursor-pointer">
                     <i class="fa-solid fa-circle-question mr-1.5"></i>Тест Знань
                 </button>
             </nav>
@@ -171,10 +171,10 @@
                             <i class="fa-solid fa-cube text-blender-accent"></i> 3D В'юпорт (Інтерактивна лабораторія)
                         </span>
                         <div class="flex gap-2">
-                            <button onclick="toggleWireframe()" id="btn-wireframe" class="px-2.5 py-1 text-xs bg-blender-dark hover:bg-gray-700 text-gray-300 rounded border border-blender-border transition">
+                            <button type="button" onclick="toggleWireframe()" id="btn-wireframe" class="px-2.5 py-1 text-xs bg-blender-dark hover:bg-gray-700 text-gray-300 rounded border border-blender-border transition">
                                 <i class="fa-solid fa-border-none mr-1"></i>Сітка (Wireframe)
                             </button>
-                            <button onclick="resetSandboxCamera()" class="px-2.5 py-1 text-xs bg-blender-dark hover:bg-gray-700 text-gray-300 rounded border border-blender-border transition">
+                            <button type="button" onclick="resetSandboxCamera()" class="px-2.5 py-1 text-xs bg-blender-dark hover:bg-gray-700 text-gray-300 rounded border border-blender-border transition">
                                 <i class="fa-solid fa-arrows-rotate mr-1"></i>Скинути огляд
                             </button>
                         </div>
@@ -197,16 +197,16 @@
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-2">Форма 2D-профілю:</label>
                         <div class="grid grid-cols-2 gap-2" id="shape-selector-group">
-                            <button onclick="changeShape('star')" id="btn-shape-star" class="shape-btn active border-2 border-blender-accent bg-blender-dark py-2 px-3 rounded-lg text-xs font-medium text-white flex items-center gap-2 transition">
+                            <button type="button" onclick="changeShape('star')" id="btn-shape-star" class="shape-btn active border-2 border-blender-accent bg-blender-dark py-2 px-3 rounded-lg text-xs font-medium text-white flex items-center gap-2 transition">
                                 <i class="fa-solid fa-star text-yellow-500"></i> Зірка
                             </button>
-                            <button onclick="changeShape('gear')" id="btn-shape-gear" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
+                            <button type="button" onclick="changeShape('gear')" id="btn-shape-gear" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
                                 <i class="fa-solid fa-gear text-blue-400"></i> Шестерня
                             </button>
-                            <button onclick="changeShape('square')" id="btn-shape-square" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
+                            <button type="button" onclick="changeShape('square')" id="btn-shape-square" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
                                 <i class="fa-solid fa-square text-green-400"></i> Квадрат
                             </button>
-                            <button onclick="changeShape('heart')" id="btn-shape-heart" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
+                            <button type="button" onclick="changeShape('heart')" id="btn-shape-heart" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
                                 <i class="fa-solid fa-heart text-red-400"></i> Серце
                             </button>
                         </div>
@@ -243,10 +243,10 @@
                     <div class="flex justify-between items-center border-t border-blender-border pt-3">
                         <label class="text-xs font-medium text-gray-300">Колір матеріалу:</label>
                         <div class="flex gap-2">
-                            <button onclick="changeColor(0xe27b14)" class="w-6 h-6 rounded-full bg-[#e27b14] border border-white/40 focus:ring-2 ring-white"></button>
-                            <button onclick="changeColor(0x3b82f6)" class="w-6 h-6 rounded-full bg-[#3b82f6] border border-white/40 focus:ring-2 ring-white"></button>
-                            <button onclick="changeColor(0x10b981)" class="w-6 h-6 rounded-full bg-[#10b981] border border-white/40 focus:ring-2 ring-white"></button>
-                            <button onclick="changeColor(0xec4899)" class="w-6 h-6 rounded-full bg-[#ec4899] border border-white/40 focus:ring-2 ring-white"></button>
+                            <button type="button" onclick="changeColor(0xe27b14)" class="w-6 h-6 rounded-full bg-[#e27b14] border border-white/40 focus:ring-2 ring-white"></button>
+                            <button type="button" onclick="changeColor(0x3b82f6)" class="w-6 h-6 rounded-full bg-[#3b82f6] border border-white/40 focus:ring-2 ring-white"></button>
+                            <button type="button" onclick="changeColor(0x10b981)" class="w-6 h-6 rounded-full bg-[#10b981] border border-white/40 focus:ring-2 ring-white"></button>
+                            <button type="button" onclick="changeColor(0xec4899)" class="w-6 h-6 rounded-full bg-[#ec4899] border border-white/40 focus:ring-2 ring-white"></button>
                         </div>
                     </div>
                 </div>
@@ -283,7 +283,7 @@
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-xs font-bold uppercase text-blender-accent tracking-wider">Цільова Модель (Завдання)</span>
                             <div class="flex items-center gap-2">
-                                <button onclick="toggleHint()" class="px-2 py-0.5 text-xs bg-blender-dark hover:bg-gray-700 text-blender-accent border border-blender-border rounded transition flex items-center gap-1">
+                                <button type="button" onclick="toggleHint()" class="px-2 py-0.5 text-xs bg-blender-dark hover:bg-gray-700 text-blender-accent border border-blender-border rounded transition flex items-center gap-1">
                                     <i class="fa-solid fa-lightbulb"></i> <span id="hint-btn-text">Підказка</span>
                                 </button>
                                 <span id="challenge-level-badge" class="px-2 py-0.5 text-xs bg-blender-blue text-white rounded font-medium">Рівень 1/5</span>
@@ -303,7 +303,7 @@
                         </div>
                     </div>
 
-                    <button onclick="nextChallengeLevel()" id="btn-next-level" disabled class="w-full py-2.5 px-4 bg-gray-700 text-gray-400 font-bold rounded-lg text-sm transition flex items-center justify-center gap-2 cursor-not-allowed">
+                    <button type="button" onclick="nextChallengeLevel()" id="btn-next-level" disabled class="w-full py-2.5 px-4 bg-gray-700 text-gray-400 font-bold rounded-lg text-sm transition flex items-center justify-center gap-2 cursor-not-allowed">
                         <span id="btn-next-text">Наступне завдання</span> <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
@@ -368,7 +368,7 @@
                     <span class="text-xs text-gray-400 block">Ваш результат:</span>
                     <span id="quiz-score-text" class="text-lg font-bold text-white">Пройдіть всі питання</span>
                 </div>
-                <button onclick="restartQuiz()" class="px-4 py-2 bg-blender-accent hover:bg-blender-accentHover text-white text-sm font-bold rounded-lg transition shadow">
+                <button type="button" onclick="restartQuiz()" class="px-4 py-2 bg-blender-accent hover:bg-blender-accentHover text-white text-sm font-bold rounded-lg transition shadow">
                     <i class="fa-solid fa-rotate-right mr-1.5"></i> Спробувати знову
                 </button>
             </div>
@@ -393,10 +393,10 @@
             </div>
 
             <div class="flex flex-col gap-3">
-                <button onclick="goToQuizFromModal()" class="w-full py-3 bg-blender-accent hover:bg-blender-accentHover text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+                <button type="button" onclick="goToQuizFromModal()" class="w-full py-3 bg-blender-accent hover:bg-blender-accentHover text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
                     <i class="fa-solid fa-graduation-cap"></i> Перейти до Тесту Знань
                 </button>
-                <button onclick="closeModal()" class="w-full py-2 bg-blender-dark hover:bg-gray-700 text-gray-300 font-semibold rounded-xl border border-blender-border transition text-xs">
+                <button type="button" onclick="closeModal()" class="w-full py-2 bg-blender-dark hover:bg-gray-700 text-gray-300 font-semibold rounded-xl border border-blender-border transition text-xs">
                     Переглянути практичні завдання ще раз
                 </button>
             </div>
@@ -409,13 +409,86 @@
         </div>
     </footer>
 
-    <!-- Three.js App Script -->
+    <!-- Three.js & App Logic -->
     <script>
-        // Tab Switcher Logic with reliable Canvas Resize
+        // Global variables
+        let sbScene, sbCamera, sbRenderer, sbMeshGroup;
+        let currentShapeName = 'star';
+        let currentColor = 0xe27b14;
+        let isWireframe = false;
+
+        let targetScene, targetCamera, targetRenderer, targetMeshGroup;
+        let studentScene, studentCamera, studentRenderer, studentMeshGroup;
+
+        let currentLevelIdx = 0;
+        let showHint = false;
+        let hasTriggeredFinalCelebration = false;
+        let isChallengeInitialized = false;
+
+        const levels = [
+            { level: 1, name: '1. Простий Квадратний Блок', desc: 'Створіть квадратну колонку висотою 3.5 без фаски (Bevel = 0.00).', shape: 'square', depth: 3.5, bevel: 0.00, color: 0x3b82f6 },
+            { level: 2, name: '2. Зіркова Медаль з Фаскою', desc: 'Витягніть зірку на висоту 2.0 та додайте фаску 0.30.', shape: 'star', depth: 2.0, bevel: 0.30, color: 0xe27b14 },
+            { level: 3, name: '3. Механічна Шестерня', desc: 'Деталь: шестерня з отвором висотою 2.5 та фаскою 0.20.', shape: 'gear', depth: 2.5, bevel: 0.20, color: 0x10b981 },
+            { level: 4, name: '4. Ювелірне Серце', desc: 'Об\'ємне серце висотою 3.0 із великою фаскою 0.45.', shape: 'heart', depth: 3.0, bevel: 0.45, color: 0xec4899 },
+            { level: 5, name: '5. Фірмовий 3D-Логотип', desc: 'Видавіть геометричний 3D-символ на висоту 4.0 з фаскою 0.25.', shape: 'letter', depth: 4.0, bevel: 0.25, color: 0x8b5cf6 }
+        ];
+
+        const quizQuestions = [
+            {
+                q: "Яку головну дію виконує операція Extrude (Видавлювання)?",
+                options: [
+                    "Зменшує кількість полігонів 3D-моделі",
+                    "Витягує 2D-елемент у просторі, створюючи об'єм та нові бічні грані",
+                    "Видаляє вибрані точки та поверхні",
+                    "Змінює колір та текстуру об'єкта"
+                ],
+                correct: 1,
+                explanation: "Extrude бере плоский 2D-контур або грань і витягує її, утворюючи нове 3D-тіло з бічними стінками."
+            },
+            {
+                q: "Яка гаряча клавіша відповідає за Extrude у більшості 3D-пакетів (наприклад, Blender)?",
+                options: [
+                    "Клавіша 'X'",
+                    "Клавіша 'E'",
+                    "Клавіша 'S'",
+                    "Клавіша 'Ctrl + Z'"
+                ],
+                correct: 1,
+                explanation: "Клавіша E (від Extrude) є найпопулярнішою гарячою клавішею для видавлювання у Blender."
+            },
+            {
+                q: "Для чого використовується параметр Bevel (Фаска) при екструзії?",
+                options: [
+                    "Щоб розрізати об'єкт навпіл",
+                    "Щоб зробити об'єкт повністю прозорим",
+                    "Щоб зрізати або згладити гострі краї об'єкта для більшої реалістичності",
+                    "Щоб збільшити швидкість рендеру"
+                ],
+                correct: 2,
+                explanation: "Bevel додає скошені кути (фаски) на гострі ребра, що робить 3D-об'єкти природними, оскільки в реальному світі ідеально гострих кутів майже немає."
+            },
+            {
+                q: "Що станеться, якщо зробити Extrude плоскої грані, не переміщуючи її?",
+                options: [
+                    "Нічого не станеться",
+                    "Створиться дубльована поверхня на тому ж місці (Zero-length faces), що може спричинити артефакти",
+                    "Об'єкт автоматично видалиться",
+                    "Програма закриється з помилкою"
+                ],
+                correct: 1,
+                explanation: "При натисканні E створюються нові грані. Якщо їх не перемістити, утворюється накладання полігонів (Z-fighting)."
+            }
+        ];
+
+        let userAnswers = Array(quizQuestions.length).fill(null);
+
+        // --- TAB SWITCHER (Works immediately on click) ---
         function switchTab(tabId) {
             ['theory', 'challenge', 'quiz'].forEach(tab => {
                 const el = document.getElementById(`tab-${tab}`);
                 const btn = document.getElementById(`nav-${tab}`);
+                if (!el || !btn) return;
+                
                 if (tab === tabId) {
                     el.classList.remove('hidden');
                     btn.classList.add('bg-blender-accent', 'text-white', 'shadow');
@@ -427,14 +500,20 @@
                 }
             });
 
-            // Trigger resize immediately and after DOM layout stabilization
-            handleResize();
-            setTimeout(() => {
-                handleResize();
-                if (tabId === 'challenge') {
-                    loadChallengeLevel(currentLevelIdx);
-                }
-            }, 80);
+            if (tabId === 'challenge') {
+                setTimeout(() => {
+                    if (!isChallengeInitialized) {
+                        initChallenge();
+                    } else {
+                        handleResize();
+                        loadChallengeLevel(currentLevelIdx);
+                    }
+                }, 50);
+            } else if (tabId === 'theory') {
+                setTimeout(handleResize, 50);
+            } else if (tabId === 'quiz') {
+                renderQuiz();
+            }
         }
 
         // --- 2D Shape Generators ---
@@ -555,7 +634,6 @@
                 previousPosition = { x: e.clientX, y: e.clientY };
             });
 
-            // Touch support for mobile/tablets
             container.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
                     isDragging = true;
@@ -581,13 +659,14 @@
         }
 
         // --- TAB 1: SANDBOX THREE.JS LOGIC ---
-        let sbScene, sbCamera, sbRenderer, sbMeshGroup;
-        let currentShapeName = 'star';
-        let currentColor = 0xe27b14;
-        let isWireframe = false;
-
         function initSandbox() {
+            if (typeof THREE === 'undefined') {
+                console.error('Three.js не завантажився. Перевірте інтернет-з\'єднання.');
+                return;
+            }
             const container = document.getElementById('sandbox-canvas-container');
+            if (!container) return;
+
             const w = container.clientWidth || 600;
             const h = container.clientHeight || 420;
 
@@ -597,7 +676,7 @@
 
             sbRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             sbRenderer.setSize(w, h);
-            sbRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            sbRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
             container.appendChild(sbRenderer.domElement);
 
             sbMeshGroup = new THREE.Group();
@@ -616,6 +695,7 @@
             makeRotatable(container, () => sbMeshGroup);
 
             buildSandboxMesh();
+            resetSandboxCamera();
 
             document.getElementById('slider-depth').addEventListener('input', (e) => {
                 document.getElementById('val-depth').innerText = parseFloat(e.target.value).toFixed(1);
@@ -632,12 +712,15 @@
 
             function renderLoop() {
                 requestAnimationFrame(renderLoop);
-                sbRenderer.render(sbScene, sbCamera);
+                if (sbRenderer && sbScene && sbCamera) {
+                    sbRenderer.render(sbScene, sbCamera);
+                }
             }
             renderLoop();
         }
 
         function buildSandboxMesh() {
+            if (!sbMeshGroup || typeof THREE === 'undefined') return;
             while(sbMeshGroup.children.length > 0) {
                 sbMeshGroup.remove(sbMeshGroup.children[0]);
             }
@@ -707,23 +790,10 @@
         }
 
         // --- TAB 2: PRACTICAL CHALLENGE LOGIC ---
-        let targetScene, targetCamera, targetRenderer, targetMeshGroup;
-        let studentScene, studentCamera, studentRenderer, studentMeshGroup;
-
-        const levels = [
-            { level: 1, name: '1. Простий Квадратний Блок', desc: 'Створіть квадратну колонку висотою 3.5 без фаски (Bevel = 0.00).', shape: 'square', depth: 3.5, bevel: 0.00, color: 0x3b82f6 },
-            { level: 2, name: '2. Зіркова Медаль з Фаскою', desc: 'Витягніть зірку на висоту 2.0 та додайте фаску 0.30.', shape: 'star', depth: 2.0, bevel: 0.30, color: 0xe27b14 },
-            { level: 3, name: '3. Механічна Шестерня', desc: 'Деталь: шестерня з отвором висотою 2.5 та фаскою 0.20.', shape: 'gear', depth: 2.5, bevel: 0.20, color: 0x10b981 },
-            { level: 4, name: '4. Ювелірне Серце', desc: 'Об'ємне серце висотою 3.0 із великою фаскою 0.45.', shape: 'heart', depth: 3.0, bevel: 0.45, color: 0xec4899 },
-            { level: 5, name: '5. Фірмовий 3D-Логотип', desc: 'Видавіть геометричний 3D-символ на висоту 4.0 з фаскою 0.25.', shape: 'letter', depth: 4.0, bevel: 0.25, color: 0x8b5cf6 }
-        ];
-
-        let currentLevelIdx = 0;
-        let showHint = false;
-        let hasTriggeredFinalCelebration = false;
-
         function initChallenge() {
-            // Target Viewport with fallback dimensions
+            if (typeof THREE === 'undefined') return;
+            isChallengeInitialized = true;
+
             const targetContainer = document.getElementById('target-canvas-container');
             const tw = targetContainer.clientWidth || 400;
             const th = targetContainer.clientHeight || 280;
@@ -734,7 +804,7 @@
 
             targetRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             targetRenderer.setSize(tw, th);
-            targetRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            targetRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
             targetContainer.appendChild(targetRenderer.domElement);
 
             targetMeshGroup = new THREE.Group();
@@ -747,7 +817,6 @@
 
             makeRotatable(targetContainer, () => targetMeshGroup);
 
-            // Student Viewport with fallback dimensions
             const studentContainer = document.getElementById('challenge-canvas-container');
             const sw = studentContainer.clientWidth || 500;
             const sh = studentContainer.clientHeight || 280;
@@ -758,7 +827,7 @@
 
             studentRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             studentRenderer.setSize(sw, sh);
-            studentRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            studentRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
             studentContainer.appendChild(studentRenderer.domElement);
 
             studentMeshGroup = new THREE.Group();
@@ -789,10 +858,12 @@
 
         function renderLevelButtons() {
             const container = document.getElementById('level-buttons-container');
+            if (!container) return;
             container.innerHTML = '';
 
             levels.forEach((lvl, idx) => {
                 const btn = document.createElement('button');
+                btn.type = 'button';
                 const isActive = idx === currentLevelIdx;
 
                 let classes = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ";
@@ -827,6 +898,7 @@
         }
 
         function loadChallengeLevel(idx) {
+            if (!isChallengeInitialized) initChallenge();
             currentLevelIdx = idx;
             const lvl = levels[idx];
 
@@ -843,20 +915,21 @@
             const overlay = document.getElementById('level-success-overlay');
             if (overlay) overlay.classList.add('hidden');
 
-            while(targetMeshGroup.children.length > 0) targetMeshGroup.remove(targetMeshGroup.children[0]);
-            
-            const targetShape = getShapeByName(lvl.shape);
-            const targetGeo = new THREE.ExtrudeGeometry(targetShape, {
-                depth: lvl.depth,
-                bevelEnabled: lvl.bevel > 0,
-                bevelThickness: lvl.bevel,
-                bevelSize: lvl.bevel * 0.8,
-                bevelSegments: 4
-            });
-            targetGeo.center();
-            const targetMesh = new THREE.Mesh(targetGeo, new THREE.MeshStandardMaterial({ color: lvl.color, roughness: 0.3, metalness: 0.2 }));
-            targetMeshGroup.add(targetMesh);
-            targetMeshGroup.rotation.set(0.4, 0.4, 0);
+            if (targetMeshGroup) {
+                while(targetMeshGroup.children.length > 0) targetMeshGroup.remove(targetMeshGroup.children[0]);
+                const targetShape = getShapeByName(lvl.shape);
+                const targetGeo = new THREE.ExtrudeGeometry(targetShape, {
+                    depth: lvl.depth,
+                    bevelEnabled: lvl.bevel > 0,
+                    bevelThickness: lvl.bevel,
+                    bevelSize: lvl.bevel * 0.8,
+                    bevelSegments: 4
+                });
+                targetGeo.center();
+                const targetMesh = new THREE.Mesh(targetGeo, new THREE.MeshStandardMaterial({ color: lvl.color, roughness: 0.3, metalness: 0.2 }));
+                targetMeshGroup.add(targetMesh);
+                targetMeshGroup.rotation.set(0.4, 0.4, 0);
+            }
 
             document.getElementById('ch-slider-depth').value = 1.0;
             document.getElementById('ch-slider-bevel').value = 0.0;
@@ -1000,57 +1073,9 @@
         }
 
         // --- TAB 3: QUIZ LOGIC ---
-        const quizQuestions = [
-            {
-                q: "Яку головну дію виконує операція Extrude (Видавлювання)?",
-                options: [
-                    "Зменшує кількість полігонів 3D-моделі",
-                    "Витягує 2D-елемент у просторі, створюючи об'єм та нові бічні грані",
-                    "Видаляє вибрані точки та поверхні",
-                    "Змінює колір та текстуру об'єкта"
-                ],
-                correct: 1,
-                explanation: "Extrude бере плоский 2D-контур або грань і витягує її, утворюючи нове 3D-тіло з бічними стінками."
-            },
-            {
-                q: "Яка гаряча клавіша відповідає за Extrude у більшості 3D-пакетів (наприклад, Blender)?",
-                options: [
-                    "Клавіша 'X'",
-                    "Клавіша 'E'",
-                    "Клавіша 'S'",
-                    "Клавіша 'Ctrl + Z'"
-                ],
-                correct: 1,
-                explanation: "Клавіша E (від Extrude) є найпопулярнішою гарячою клавішею для видавлювання у Blender."
-            },
-            {
-                q: "Для чого використовується параметр Bevel (Фаска) при екструзії?",
-                options: [
-                    "Щоб розрізати об'єкт навпіл",
-                    "Щоб зробити об'єкт повністю прозорим",
-                    "Щоб зрізати або згладити гострі краї об'єкта для більшої реалістичності",
-                    "Щоб збільшити швидкість рендеру"
-                ],
-                correct: 2,
-                explanation: "Bevel додає скошені кути (фаски) на гострі ребра, що робить 3D-об'єкти природними, оскільки в реальному світі ідеально гострих кутів майже немає."
-            },
-            {
-                q: "Що станеться, якщо зробити Extrude плоскої грані, не переміщуючи її?",
-                options: [
-                    "Нічого не станеться",
-                    "Створиться дубльована поверхня на тому ж місці (Zero-length faces), що може спричинити артефакти",
-                    "Об'єкт автоматично видалиться",
-                    "Програма закриється з помилкою"
-                ],
-                correct: 1,
-                explanation: "При натисканні E створюються нові грані. Якщо їх не перемістити, утворюється накладання полігонів (Z-fighting)."
-            }
-        ];
-
-        let userAnswers = Array(quizQuestions.length).fill(null);
-
         function renderQuiz() {
             const container = document.getElementById('quiz-container');
+            if (!container) return;
             container.innerHTML = '';
 
             quizQuestions.forEach((q, qIdx) => {
@@ -1071,9 +1096,9 @@
                     }
 
                     optionsHTML += `
-                        <button onclick="selectAnswer(${qIdx}, ${oIdx})" ${userAnswers[qIdx] !== null ? 'disabled' : ''} 
-                            class="w-full text-left p-3 rounded-lg border text-xs sm:text-sm transition flex items-center gap-3 ${btnStyle}">
-                            <span class="w-5 h-5 rounded-full border border-gray-500 flex items-center justify-center text-xs font-mono">
+                        <button type="button" onclick="selectAnswer(${qIdx}, ${oIdx})" ${userAnswers[qIdx] !== null ? 'disabled' : ''} 
+                            class="w-full text-left p-3 rounded-lg border text-xs sm:text-sm transition flex items-center gap-3 cursor-pointer ${btnStyle}">
+                            <span class="w-5 h-5 rounded-full border border-gray-500 flex items-center justify-center text-xs font-mono shrink-0">
                                 ${String.fromCharCode(65 + oIdx)}
                             </span>
                             <span>${opt}</span>
@@ -1115,18 +1140,21 @@
             }, 0);
 
             const scoreText = document.getElementById('quiz-score-text');
-            scoreText.innerText = `Правильно: ${correctCount} з ${quizQuestions.length}`;
-            if (correctCount === quizQuestions.length) {
-                scoreText.className = "text-lg font-bold text-green-400";
-            } else {
-                scoreText.className = "text-lg font-bold text-yellow-400";
+            if (scoreText) {
+                scoreText.innerText = `Правильно: ${correctCount} з ${quizQuestions.length}`;
+                scoreText.className = correctCount === quizQuestions.length
+                    ? "text-lg font-bold text-green-400"
+                    : "text-lg font-bold text-yellow-400";
             }
         }
 
         function restartQuiz() {
             userAnswers = Array(quizQuestions.length).fill(null);
-            document.getElementById('quiz-score-text').innerText = 'Пройдіть всі питання';
-            document.getElementById('quiz-score-text').className = 'text-lg font-bold text-white';
+            const scoreText = document.getElementById('quiz-score-text');
+            if (scoreText) {
+                scoreText.innerText = 'Пройдіть всі питання';
+                scoreText.className = 'text-lg font-bold text-white';
+            }
             renderQuiz();
         }
 
@@ -1154,13 +1182,12 @@
 
         window.addEventListener('resize', handleResize);
 
-        window.onload = function() {
+        // Reliable initialization regardless of when DOMContentLoaded fires
+        function bootstrapApp() {
             initSandbox();
-            initChallenge();
+            renderLevelButtons();
             renderQuiz();
-            resetSandboxCamera();
 
-            // Observe container size changes dynamically
             if (typeof ResizeObserver !== 'undefined') {
                 const ro = new ResizeObserver(() => handleResize());
                 ['sandbox-canvas-container', 'target-canvas-container', 'challenge-canvas-container'].forEach(id => {
@@ -1168,7 +1195,13 @@
                     if (el) ro.observe(el);
                 });
             }
-        };
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootstrapApp);
+        } else {
+            bootstrapApp();
+        }
     </script>
 </body>
 </html>
