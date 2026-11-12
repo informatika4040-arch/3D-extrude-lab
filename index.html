@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Extrude (Екструзія) — Інтерактивний курс</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        blender: {
+                            dark: '#181818',
+                            panel: '#242424',
+                            border: '#383838',
+                            accent: '#e27b14',
+                            accentHover: '#f58d20',
+                            blue: '#2b79c2',
+                            text: '#e0e0e0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #181818;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #383838;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e27b14;
+        }
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            background: radial-gradient(circle at center, #2c2c2c 0%, #111111 100%);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .canvas-container:active {
+            cursor: grabbing;
+        }
+        .challenge-canvas {
+            height: 280px;
+            min-height: 280px;
+        }
+        .pulse-glow {
+            animation: pulse-glow 1.8s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px rgba(226, 123, 20, 0.4); }
+            100% { box-shadow: 0 0 22px rgba(226, 123, 20, 0.95); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="bg-blender-panel border-b border-blender-border sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blender-accent text-white p-2.5 rounded-lg shadow-lg flex items-center justify-center">
+                    <i class="fa-solid font-bold text-xl fa-cube"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-white leading-none">3D Extrude Lab</h1>
+                    <span class="text-xs text-gray-400">Навчальний інтерактивний модуль 3D-графіки</span>
+                </div>
+            </div>
+            
+            <nav class="flex items-center gap-2 bg-blender-dark p-1 rounded-lg border border-blender-border">
+                <button onclick="switchTab('theory')" id="nav-theory" class="px-4 py-1.5 rounded-md text-sm font-medium transition-all bg-blender-accent text-white shadow">
+                    <i class="fa-solid fa-book-open mr-1.5"></i>Теорія та 3D-Студія
+                </button>
+                <button onclick="switchTab('challenge')" id="nav-challenge" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-300 hover:text-white transition-all">
+                    <i class="fa-solid fa-gamepad mr-1.5"></i>Практика (5 Рівнів)
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-300 hover:text-white transition-all">
+                    <i class="fa-solid fa-circle-question mr-1.5"></i>Тест Знань
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- TAB 1: THEORY & INTERACTIVE SANDBOX -->
+        <section id="tab-theory" class="block space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 bg-blender-panel p-6 rounded-xl border border-blender-border shadow">
+                    <h2 class="text-2xl font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group text-blender-accent"></i> Що таке Extrude (Екструзія)?
+                    </h2>
+                    <p class="text-gray-300 mb-4 leading-relaxed text-sm sm:text-base">
+                        <strong class="text-blender-accent">Екструзія (Видавлювання)</strong> — це фундамент 3D-моделювання. Інструмент бере 2D-контур (точки, лінії або плоску грань) і «витягує» його у просторі вздовж осі, створюючи об'ємну 3D-модель із новими бічними гранями.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                        <div class="bg-blender-dark p-3 rounded-lg border border-blender-border">
+                            <span class="text-xs text-blender-accent font-semibold uppercase block mb-1">1. 2D Профіль</span>
+                            <p class="text-xs text-gray-400">Створюється плоский контур (коло, зірка, квадрат чи літери).</p>
+                        </div>
+                        <div class="bg-blender-dark p-3 rounded-lg border border-blender-border">
+                            <span class="text-xs text-blender-accent font-semibold uppercase block mb-1">2. Видавлювання (Depth)</span>
+                            <p class="text-xs text-gray-400">Контур витягується по довжині, створюючи бічні стінки.</p>
+                        </div>
+                        <div class="bg-blender-dark p-3 rounded-lg border border-blender-border">
+                            <span class="text-xs text-blender-accent font-semibold uppercase block mb-1">3. Фаска (Bevel)</span>
+                            <p class="text-xs text-gray-400">Зрізаються та згладжуються ребра для реалістичного вигляду.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blender-panel p-6 rounded-xl border border-blender-border shadow flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-keyboard text-blender-blue"></i> Основні гарячі клавіші
+                        </h3>
+                        <ul class="space-y-2.5 text-xs text-gray-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-green-500 mt-0.5"></i>
+                                <span><strong>Blender / 3ds Max:</strong> Клавіша <kbd class="bg-black px-1.5 py-0.5 rounded text-blender-accent border border-gray-700 font-mono">E</kbd> для екструзії граней.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-green-500 mt-0.5"></i>
+                                <span><strong>Фаски (Bevel):</strong> Клавіші <kbd class="bg-black px-1.5 py-0.5 rounded text-blender-accent border border-gray-700 font-mono">Ctrl + B</kbd>.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-green-500 mt-0.5"></i>
+                                <span><strong>Сфера застосування:</strong> Створення 3D-тексту, деталей машин, будівництво стін у CAD-системах.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 p-2.5 bg-blender-dark rounded-lg border border-blender-border text-center">
+                        <span class="text-xs text-gray-400"><i class="fa-solid fa-mouse text-blender-accent mr-1"></i> Обертайте 3D-модель за допомогою мишки!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive 3D Sandbox Viewport -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-blender-panel p-4 rounded-xl border border-blender-border shadow flex flex-col">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm font-semibold text-gray-200 flex items-center gap-2">
+                            <i class="fa-solid fa-cube text-blender-accent"></i> 3D В'юпорт (Інтерактивна лабораторія)
+                        </span>
+                        <div class="flex gap-2">
+                            <button onclick="toggleWireframe()" id="btn-wireframe" class="px-2.5 py-1 text-xs bg-blender-dark hover:bg-gray-700 text-gray-300 rounded border border-blender-border transition">
+                                <i class="fa-solid fa-border-none mr-1"></i>Сітка (Wireframe)
+                            </button>
+                            <button onclick="resetSandboxCamera()" class="px-2.5 py-1 text-xs bg-blender-dark hover:bg-gray-700 text-gray-300 rounded border border-blender-border transition">
+                                <i class="fa-solid fa-arrows-rotate mr-1"></i>Скинути огляд
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container flex-grow" id="sandbox-canvas-container">
+                        <div class="absolute bottom-3 left-3 bg-black/70 backdrop-blur px-3 py-1.5 rounded-md text-xs text-gray-300 border border-white/10 pointer-events-none z-10">
+                            <i class="fa-solid fa-hand-pointer mr-1 text-blender-accent"></i> Затисніть ЛКМ для 360° обертання об'єкта
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls Panel -->
+                <div class="bg-blender-panel p-5 rounded-xl border border-blender-border shadow space-y-5">
+                    <h3 class="text-base font-bold text-white border-b border-blender-border pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-blender-accent"></i> Параметри Extrude
+                    </h3>
+
+                    <!-- Shape Selector -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-2">Форма 2D-профілю:</label>
+                        <div class="grid grid-cols-2 gap-2" id="shape-selector-group">
+                            <button onclick="changeShape('star')" id="btn-shape-star" class="shape-btn active border-2 border-blender-accent bg-blender-dark py-2 px-3 rounded-lg text-xs font-medium text-white flex items-center gap-2 transition">
+                                <i class="fa-solid fa-star text-yellow-500"></i> Зірка
+                            </button>
+                            <button onclick="changeShape('gear')" id="btn-shape-gear" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
+                                <i class="fa-solid fa-gear text-blue-400"></i> Шестерня
+                            </button>
+                            <button onclick="changeShape('square')" id="btn-shape-square" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
+                                <i class="fa-solid fa-square text-green-400"></i> Квадрат
+                            </button>
+                            <button onclick="changeShape('heart')" id="btn-shape-heart" class="shape-btn border border-blender-border bg-blender-dark hover:border-gray-500 py-2 px-3 rounded-lg text-xs font-medium text-gray-300 flex items-center gap-2 transition">
+                                <i class="fa-solid fa-heart text-red-400"></i> Серце
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Extrude Depth Slider -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs">
+                            <label class="font-medium text-gray-300">Висота екструзії (Depth):</label>
+                            <span id="val-depth" class="font-mono text-blender-accent font-bold">2.0</span>
+                        </div>
+                        <input type="range" id="slider-depth" min="0.1" max="5.0" step="0.1" value="2.0" class="w-full accent-blender-accent cursor-pointer">
+                    </div>
+
+                    <!-- Bevel Thickness Slider -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs">
+                            <label class="font-medium text-gray-300">Товщина фаски (Bevel):</label>
+                            <span id="val-bevel" class="font-mono text-blender-accent font-bold">0.2</span>
+                        </div>
+                        <input type="range" id="slider-bevel" min="0.0" max="0.8" step="0.05" value="0.2" class="w-full accent-blender-accent cursor-pointer">
+                    </div>
+
+                    <!-- Bevel Segments Slider -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs">
+                            <label class="font-medium text-gray-300">Сегменти фаски (Деталізація):</label>
+                            <span id="val-segments" class="font-mono text-blender-accent font-bold">3</span>
+                        </div>
+                        <input type="range" id="slider-segments" min="1" max="10" step="1" value="3" class="w-full accent-blender-accent cursor-pointer">
+                    </div>
+
+                    <!-- Color Picker -->
+                    <div class="flex justify-between items-center border-t border-blender-border pt-3">
+                        <label class="text-xs font-medium text-gray-300">Колір матеріалу:</label>
+                        <div class="flex gap-2">
+                            <button onclick="changeColor(0xe27b14)" class="w-6 h-6 rounded-full bg-[#e27b14] border border-white/40 focus:ring-2 ring-white"></button>
+                            <button onclick="changeColor(0x3b82f6)" class="w-6 h-6 rounded-full bg-[#3b82f6] border border-white/40 focus:ring-2 ring-white"></button>
+                            <button onclick="changeColor(0x10b981)" class="w-6 h-6 rounded-full bg-[#10b981] border border-white/40 focus:ring-2 ring-white"></button>
+                            <button onclick="changeColor(0xec4899)" class="w-6 h-6 rounded-full bg-[#ec4899] border border-white/40 focus:ring-2 ring-white"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: PRACTICAL CHALLENGE (5 LEVELS) -->
+        <section id="tab-challenge" class="hidden space-y-6">
+            <div class="bg-blender-panel p-5 rounded-xl border border-blender-border shadow">
+                <div class="flex flex-wrap justify-between items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-blender-accent"></i> Практичне завдання: 3D-Архітектор
+                        </h2>
+                        <p class="text-xs text-gray-300 mt-1">
+                            Підберіть профіль та налаштуйте параметри екструзії для досягнення точності не менше <strong class="text-green-400">85%</strong>.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 bg-blender-dark px-4 py-2 rounded-lg border border-blender-border">
+                        <span class="text-xs font-medium text-gray-400">Точність збігу:</span>
+                        <span id="match-score" class="text-2xl font-bold font-mono text-yellow-400">0%</span>
+                    </div>
+                </div>
+
+                <!-- Dynamic Level Selector Buttons -->
+                <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-blender-border" id="level-buttons-container"></div>
+            </div>
+
+            <!-- Workspace Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Target Preview Model -->
+                <div class="lg:col-span-5 bg-blender-panel p-4 rounded-xl border border-blender-border flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold uppercase text-blender-accent tracking-wider">Цільова Модель (Завдання)</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="toggleHint()" class="px-2 py-0.5 text-xs bg-blender-dark hover:bg-gray-700 text-blender-accent border border-blender-border rounded transition flex items-center gap-1">
+                                    <i class="fa-solid fa-lightbulb"></i> <span id="hint-btn-text">Підказка</span>
+                                </button>
+                                <span id="challenge-level-badge" class="px-2 py-0.5 text-xs bg-blender-blue text-white rounded font-medium">Рівень 1/5</span>
+                            </div>
+                        </div>
+                        <h3 id="target-title" class="text-lg font-bold text-white">Рівень 1</h3>
+                        <p id="target-desc" class="text-xs text-gray-400 mt-1">Опис завдання...</p>
+                        
+                        <!-- Hint Banner -->
+                        <div id="target-hint-box" class="hidden mt-2 p-2 bg-blender-dark border border-blender-accent/40 rounded text-xs text-blender-accent font-mono"></div>
+                    </div>
+
+                    <div class="canvas-container challenge-canvas my-3 relative" id="target-canvas-container">
+                        <!-- Success Notification Banner -->
+                        <div id="level-success-overlay" class="hidden absolute top-3 left-3 right-3 bg-green-500/90 text-white font-bold py-2 px-3 rounded-lg shadow-lg text-center text-xs animate-bounce z-20 backdrop-blur">
+                            🎉 Відмінно! Завдання виконано! Натисніть кнопку нижче 🎯
+                        </div>
+                    </div>
+
+                    <button onclick="nextChallengeLevel()" id="btn-next-level" disabled class="w-full py-2.5 px-4 bg-gray-700 text-gray-400 font-bold rounded-lg text-sm transition flex items-center justify-center gap-2 cursor-not-allowed">
+                        <span id="btn-next-text">Наступне завдання</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Student Editable Workspace -->
+                <div class="lg:col-span-7 bg-blender-panel p-4 rounded-xl border border-blender-border flex flex-col justify-between space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold uppercase text-green-400 tracking-wider">Ваша Модель (Редагування)</span>
+                        <span class="text-xs text-gray-400"><i class="fa-solid fa-hand-pointer mr-1"></i> Обертайте мишкою</span>
+                    </div>
+
+                    <div class="canvas-container challenge-canvas" id="challenge-canvas-container"></div>
+
+                    <!-- Interactive Controls for Challenge -->
+                    <div class="bg-blender-dark p-4 rounded-lg border border-blender-border space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-300 mb-1 font-semibold">2D Профіль:</label>
+                                <select id="ch-select-shape" onchange="updateChallengeStudentMesh()" class="w-full bg-blender-panel border border-blender-border text-xs text-white rounded p-2 focus:outline-none focus:border-blender-accent">
+                                    <option value="square">Квадрат</option>
+                                    <option value="star">Зірка</option>
+                                    <option value="gear">Шестерня</option>
+                                    <option value="heart">Серце</option>
+                                    <option value="letter">3D Логотип (Буква)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300 font-semibold">Висота (Depth):</span>
+                                    <span id="ch-val-depth" class="font-mono text-blender-accent font-bold">1.0</span>
+                                </div>
+                                <input type="range" id="ch-slider-depth" min="0.2" max="5.0" step="0.1" value="1.0" oninput="updateChallengeStudentMesh()" class="w-full accent-blender-accent cursor-pointer">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-gray-300 font-semibold">Фаска (Bevel):</span>
+                                    <span id="ch-val-bevel" class="font-mono text-blender-accent font-bold">0.00</span>
+                                </div>
+                                <input type="range" id="ch-slider-bevel" min="0.0" max="0.6" step="0.05" value="0.0" oninput="updateChallengeStudentMesh()" class="w-full accent-blender-accent cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: QUIZ SECTION -->
+        <section id="tab-quiz" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="bg-blender-panel p-6 rounded-xl border border-blender-border shadow">
+                <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-blender-accent"></i> Тест Знань: Extrude в 3D
+                </h2>
+                <p class="text-xs text-gray-300">Дайте відповіді на запитання для перевірки засвоєних знань.</p>
+            </div>
+
+            <div id="quiz-container" class="space-y-4"></div>
+
+            <div class="bg-blender-panel p-5 rounded-xl border border-blender-border flex justify-between items-center">
+                <div>
+                    <span class="text-xs text-gray-400 block">Ваш результат:</span>
+                    <span id="quiz-score-text" class="text-lg font-bold text-white">Пройдіть всі питання</span>
+                </div>
+                <button onclick="restartQuiz()" class="px-4 py-2 bg-blender-accent hover:bg-blender-accentHover text-white text-sm font-bold rounded-lg transition shadow">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i> Спробувати знову
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FINAL COMPLETION MODAL WINDOW -->
+    <div id="completion-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-all">
+        <div class="bg-blender-panel border-2 border-blender-accent rounded-2xl max-w-md w-full p-6 text-center shadow-2xl relative">
+            <div class="w-16 h-16 bg-blender-accent/20 text-blender-accent rounded-full flex items-center justify-center mx-auto mb-4 text-3xl border border-blender-accent">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">Вітаємо! Ви 3D-Майстер! 🎉</h2>
+            <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+                Ви успішно пройшли всі <strong class="text-blender-accent">5 практичних рівнів</strong> з 3D Extrude! Тепер ви досконало знаєте, як витягувати 2D-профілі та створювати реалістичні фаски.
+            </p>
+
+            <div class="bg-blender-dark p-3 rounded-lg border border-blender-border mb-6 text-xs text-left space-y-1 text-gray-300 font-mono">
+                <div class="flex justify-between"><span>Пройдено рівнів:</span> <span class="text-green-400 font-bold">5 / 5</span></div>
+                <div class="flex justify-between"><span>Статус практики:</span> <span class="text-green-400 font-bold">Зараховано (100%)</span></div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <button onclick="goToQuizFromModal()" class="w-full py-3 bg-blender-accent hover:bg-blender-accentHover text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-graduation-cap"></i> Перейти до Тесту Знань
+                </button>
+                <button onclick="closeModal()" class="w-full py-2 bg-blender-dark hover:bg-gray-700 text-gray-300 font-semibold rounded-xl border border-blender-border transition text-xs">
+                    Переглянути практичні завдання ще раз
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-blender-panel border-t border-blender-border py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+            3D Extrude Educational Module &copy; 2026 | Створено для уроків 3D-графіки та комп'ютерного моделювання
+        </div>
+    </footer>
+
+    <!-- Three.js App Script -->
+    <script>
+        // Tab Switcher Logic with reliable Canvas Resize
+        function switchTab(tabId) {
+            ['theory', 'challenge', 'quiz'].forEach(tab => {
+                const el = document.getElementById(`tab-${tab}`);
+                const btn = document.getElementById(`nav-${tab}`);
+                if (tab === tabId) {
+                    el.classList.remove('hidden');
+                    btn.classList.add('bg-blender-accent', 'text-white', 'shadow');
+                    btn.classList.remove('text-gray-300');
+                } else {
+                    el.classList.add('hidden');
+                    btn.classList.remove('bg-blender-accent', 'text-white', 'shadow');
+                    btn.classList.add('text-gray-300');
+                }
+            });
+
+            // Trigger resize immediately and after DOM layout stabilization
+            handleResize();
+            setTimeout(() => {
+                handleResize();
+                if (tabId === 'challenge') {
+                    loadChallengeLevel(currentLevelIdx);
+                }
+            }, 80);
+        }
+
+        // --- 2D Shape Generators ---
+        function createStarShape() {
+            const shape = new THREE.Shape();
+            const points = 5;
+            const outerRadius = 1.8;
+            const innerRadius = 0.8;
+            for (let i = 0; i < points * 2; i++) {
+                const r = (i % 2 === 0) ? outerRadius : innerRadius;
+                const a = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2;
+                const x = Math.cos(a) * r;
+                const y = Math.sin(a) * r;
+                if (i === 0) shape.moveTo(x, y);
+                else shape.lineTo(x, y);
+            }
+            shape.closePath();
+            return shape;
+        }
+
+        function createSquareShape() {
+            const shape = new THREE.Shape();
+            const s = 1.5;
+            shape.moveTo(-s, -s);
+            shape.lineTo(s, -s);
+            shape.lineTo(s, s);
+            shape.lineTo(-s, s);
+            shape.closePath();
+            return shape;
+        }
+
+        function createGearShape() {
+            const shape = new THREE.Shape();
+            const teeth = 8;
+            const rOuter = 1.8;
+            const rInner = 1.3;
+            for (let i = 0; i < teeth; i++) {
+                const angle = (i / teeth) * Math.PI * 2;
+                const step = (Math.PI * 2) / teeth;
+                shape.lineTo(Math.cos(angle) * rInner, Math.sin(angle) * rInner);
+                shape.lineTo(Math.cos(angle + step * 0.25) * rOuter, Math.sin(angle + step * 0.25) * rOuter);
+                shape.lineTo(Math.cos(angle + step * 0.5) * rOuter, Math.sin(angle + step * 0.5) * rOuter);
+                shape.lineTo(Math.cos(angle + step * 0.75) * rInner, Math.sin(angle + step * 0.75) * rInner);
+            }
+            shape.closePath();
+
+            const hole = new THREE.Path();
+            hole.absarc(0, 0, 0.5, 0, Math.PI * 2, true);
+            shape.holes.push(hole);
+            return shape;
+        }
+
+        function createHeartShape() {
+            const shape = new THREE.Shape();
+            const x = 0, y = 0;
+            shape.moveTo(x + 0.25, y + 0.25);
+            shape.bezierCurveTo(x + 0.25, y + 0.25, x + 0.2, y, x, y);
+            shape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
+            shape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.54, x + 0.25, y + 1.9);
+            shape.bezierCurveTo(x + 0.8, y + 1.54, x + 1.1, y + 1.1, x + 1.1, y + 0.7);
+            shape.bezierCurveTo(x + 1.1, y + 0.7, x + 1.1, y, x + 0.5, y);
+            shape.bezierCurveTo(x + 0.35, y, x + 0.25, y + 0.25, x + 0.25, y + 0.25);
+            return shape;
+        }
+
+        function createLetterShape() {
+            const shape = new THREE.Shape();
+            shape.moveTo(-1.0, -1.3);
+            shape.lineTo(1.0, -1.3);
+            shape.lineTo(1.0, -0.7);
+            shape.lineTo(-0.2, -0.7);
+            shape.lineTo(-0.2, -0.2);
+            shape.lineTo(0.7, -0.2);
+            shape.lineTo(0.7, 0.3);
+            shape.lineTo(-0.2, 0.3);
+            shape.lineTo(-0.2, 0.8);
+            shape.lineTo(1.0, 0.8);
+            shape.lineTo(1.0, 1.3);
+            shape.lineTo(-1.0, 1.3);
+            shape.closePath();
+            return shape;
+        }
+
+        function getShapeByName(name) {
+            switch(name) {
+                case 'star': return createStarShape();
+                case 'gear': return createGearShape();
+                case 'square': return createSquareShape();
+                case 'heart': return createHeartShape();
+                case 'letter': return createLetterShape();
+                default: return createStarShape();
+            }
+        }
+
+        // --- Custom Interactive Rotation Helper (Mouse + Touch) ---
+        function makeRotatable(container, targetObjectGetter) {
+            let isDragging = false;
+            let previousPosition = { x: 0, y: 0 };
+
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousPosition = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.clientX - previousPosition.x;
+                const deltaY = e.clientY - previousPosition.y;
+                const targetObj = targetObjectGetter();
+                if (targetObj) {
+                    targetObj.rotation.y += deltaX * 0.015;
+                    targetObj.rotation.x += deltaY * 0.015;
+                }
+                previousPosition = { x: e.clientX, y: e.clientY };
+            });
+
+            // Touch support for mobile/tablets
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    previousPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (!isDragging || e.touches.length !== 1) return;
+                const deltaX = e.touches[0].clientX - previousPosition.x;
+                const deltaY = e.touches[0].clientY - previousPosition.y;
+                const targetObj = targetObjectGetter();
+                if (targetObj) {
+                    targetObj.rotation.y += deltaX * 0.015;
+                    targetObj.rotation.x += deltaY * 0.015;
+                }
+                previousPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }, { passive: true });
+        }
+
+        // --- TAB 1: SANDBOX THREE.JS LOGIC ---
+        let sbScene, sbCamera, sbRenderer, sbMeshGroup;
+        let currentShapeName = 'star';
+        let currentColor = 0xe27b14;
+        let isWireframe = false;
+
+        function initSandbox() {
+            const container = document.getElementById('sandbox-canvas-container');
+            const w = container.clientWidth || 600;
+            const h = container.clientHeight || 420;
+
+            sbScene = new THREE.Scene();
+            sbCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+            sbCamera.position.set(0, 0, 7);
+
+            sbRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            sbRenderer.setSize(w, h);
+            sbRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(sbRenderer.domElement);
+
+            sbMeshGroup = new THREE.Group();
+            sbScene.add(sbMeshGroup);
+
+            const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
+            light1.position.set(5, 5, 5);
+            sbScene.add(light1);
+
+            const light2 = new THREE.DirectionalLight(0x2b79c2, 0.6);
+            light2.position.set(-5, -5, -2);
+            sbScene.add(light2);
+
+            sbScene.add(new THREE.AmbientLight(0xffffff, 0.45));
+
+            makeRotatable(container, () => sbMeshGroup);
+
+            buildSandboxMesh();
+
+            document.getElementById('slider-depth').addEventListener('input', (e) => {
+                document.getElementById('val-depth').innerText = parseFloat(e.target.value).toFixed(1);
+                buildSandboxMesh();
+            });
+            document.getElementById('slider-bevel').addEventListener('input', (e) => {
+                document.getElementById('val-bevel').innerText = parseFloat(e.target.value).toFixed(2);
+                buildSandboxMesh();
+            });
+            document.getElementById('slider-segments').addEventListener('input', (e) => {
+                document.getElementById('val-segments').innerText = e.target.value;
+                buildSandboxMesh();
+            });
+
+            function renderLoop() {
+                requestAnimationFrame(renderLoop);
+                sbRenderer.render(sbScene, sbCamera);
+            }
+            renderLoop();
+        }
+
+        function buildSandboxMesh() {
+            while(sbMeshGroup.children.length > 0) {
+                sbMeshGroup.remove(sbMeshGroup.children[0]);
+            }
+
+            const depth = parseFloat(document.getElementById('slider-depth').value);
+            const bevelThickness = parseFloat(document.getElementById('slider-bevel').value);
+            const bevelSegments = parseInt(document.getElementById('slider-segments').value);
+
+            const settings = {
+                steps: 1,
+                depth: depth,
+                bevelEnabled: bevelThickness > 0,
+                bevelThickness: bevelThickness,
+                bevelSize: bevelThickness * 0.8,
+                bevelOffset: 0,
+                bevelSegments: bevelSegments
+            };
+
+            const shape = getShapeByName(currentShapeName);
+            const geometry = new THREE.ExtrudeGeometry(shape, settings);
+            geometry.center();
+
+            const material = new THREE.MeshStandardMaterial({
+                color: currentColor,
+                roughness: 0.3,
+                metalness: 0.2,
+                wireframe: isWireframe
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            sbMeshGroup.add(mesh);
+        }
+
+        function changeShape(name) {
+            currentShapeName = name;
+            document.querySelectorAll('#shape-selector-group button').forEach(btn => {
+                btn.classList.remove('active', 'border-2', 'border-blender-accent');
+                btn.classList.add('border', 'border-blender-border');
+            });
+            const activeBtn = document.getElementById(`btn-shape-${name}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'border-2', 'border-blender-accent');
+            }
+            buildSandboxMesh();
+        }
+
+        function changeColor(hex) {
+            currentColor = hex;
+            buildSandboxMesh();
+        }
+
+        function toggleWireframe() {
+            isWireframe = !isWireframe;
+            const btn = document.getElementById('btn-wireframe');
+            if (isWireframe) {
+                btn.classList.add('bg-blender-accent', 'text-white');
+            } else {
+                btn.classList.remove('bg-blender-accent', 'text-white');
+            }
+            buildSandboxMesh();
+        }
+
+        function resetSandboxCamera() {
+            if (sbMeshGroup) {
+                sbMeshGroup.rotation.set(0.4, 0.5, 0);
+            }
+        }
+
+        // --- TAB 2: PRACTICAL CHALLENGE LOGIC ---
+        let targetScene, targetCamera, targetRenderer, targetMeshGroup;
+        let studentScene, studentCamera, studentRenderer, studentMeshGroup;
+
+        const levels = [
+            { level: 1, name: '1. Простий Квадратний Блок', desc: 'Створіть квадратну колонку висотою 3.5 без фаски (Bevel = 0.00).', shape: 'square', depth: 3.5, bevel: 0.00, color: 0x3b82f6 },
+            { level: 2, name: '2. Зіркова Медаль з Фаскою', desc: 'Витягніть зірку на висоту 2.0 та додайте фаску 0.30.', shape: 'star', depth: 2.0, bevel: 0.30, color: 0xe27b14 },
+            { level: 3, name: '3. Механічна Шестерня', desc: 'Деталь: шестерня з отвором висотою 2.5 та фаскою 0.20.', shape: 'gear', depth: 2.5, bevel: 0.20, color: 0x10b981 },
+            { level: 4, name: '4. Ювелірне Серце', desc: 'Об'ємне серце висотою 3.0 із великою фаскою 0.45.', shape: 'heart', depth: 3.0, bevel: 0.45, color: 0xec4899 },
+            { level: 5, name: '5. Фірмовий 3D-Логотип', desc: 'Видавіть геометричний 3D-символ на висоту 4.0 з фаскою 0.25.', shape: 'letter', depth: 4.0, bevel: 0.25, color: 0x8b5cf6 }
+        ];
+
+        let currentLevelIdx = 0;
+        let showHint = false;
+        let hasTriggeredFinalCelebration = false;
+
+        function initChallenge() {
+            // Target Viewport with fallback dimensions
+            const targetContainer = document.getElementById('target-canvas-container');
+            const tw = targetContainer.clientWidth || 400;
+            const th = targetContainer.clientHeight || 280;
+
+            targetScene = new THREE.Scene();
+            targetCamera = new THREE.PerspectiveCamera(45, tw / th, 0.1, 100);
+            targetCamera.position.set(0, 0, 6.8);
+
+            targetRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            targetRenderer.setSize(tw, th);
+            targetRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            targetContainer.appendChild(targetRenderer.domElement);
+
+            targetMeshGroup = new THREE.Group();
+            targetScene.add(targetMeshGroup);
+
+            const tLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            tLight.position.set(5, 5, 5);
+            targetScene.add(tLight);
+            targetScene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+            makeRotatable(targetContainer, () => targetMeshGroup);
+
+            // Student Viewport with fallback dimensions
+            const studentContainer = document.getElementById('challenge-canvas-container');
+            const sw = studentContainer.clientWidth || 500;
+            const sh = studentContainer.clientHeight || 280;
+
+            studentScene = new THREE.Scene();
+            studentCamera = new THREE.PerspectiveCamera(45, sw / sh, 0.1, 100);
+            studentCamera.position.set(0, 0, 6.8);
+
+            studentRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            studentRenderer.setSize(sw, sh);
+            studentRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            studentContainer.appendChild(studentRenderer.domElement);
+
+            studentMeshGroup = new THREE.Group();
+            studentScene.add(studentMeshGroup);
+
+            const sLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            sLight.position.set(5, 5, 5);
+            studentScene.add(sLight);
+            studentScene.add(new THREE.AmbientLight(0xffffff, 0.5));
+
+            makeRotatable(studentContainer, () => studentMeshGroup);
+
+            renderLevelButtons();
+            loadChallengeLevel(0);
+
+            function challengeLoop() {
+                requestAnimationFrame(challengeLoop);
+                if (targetMeshGroup) targetMeshGroup.rotation.y += 0.005;
+                if (targetRenderer && targetScene && targetCamera) {
+                    targetRenderer.render(targetScene, targetCamera);
+                }
+                if (studentRenderer && studentScene && studentCamera) {
+                    studentRenderer.render(studentScene, studentCamera);
+                }
+            }
+            challengeLoop();
+        }
+
+        function renderLevelButtons() {
+            const container = document.getElementById('level-buttons-container');
+            container.innerHTML = '';
+
+            levels.forEach((lvl, idx) => {
+                const btn = document.createElement('button');
+                const isActive = idx === currentLevelIdx;
+
+                let classes = "px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ";
+                if (isActive) {
+                    classes += "bg-blender-accent text-white shadow ring-2 ring-white/20";
+                } else {
+                    classes += "bg-blender-dark hover:bg-gray-700 text-gray-200 border border-blender-border";
+                }
+
+                btn.className = classes;
+                btn.onclick = () => loadChallengeLevel(idx);
+
+                btn.innerHTML = `<i class="fa-solid fa-cube"></i> ${lvl.name}`;
+                container.appendChild(btn);
+            });
+        }
+
+        function toggleHint() {
+            showHint = !showHint;
+            const hintBox = document.getElementById('target-hint-box');
+            const hintText = document.getElementById('hint-btn-text');
+            const target = levels[currentLevelIdx];
+
+            if (showHint) {
+                hintBox.classList.remove('hidden');
+                hintBox.innerText = `💡 Підказка цілі: Форма = ${target.shape.toUpperCase()}, Depth = ${target.depth.toFixed(1)}, Bevel = ${target.bevel.toFixed(2)}`;
+                hintText.innerText = "Сховати підказку";
+            } else {
+                hintBox.classList.add('hidden');
+                hintText.innerText = "Підказка";
+            }
+        }
+
+        function loadChallengeLevel(idx) {
+            currentLevelIdx = idx;
+            const lvl = levels[idx];
+
+            renderLevelButtons();
+
+            document.getElementById('challenge-level-badge').innerText = `Рівень ${lvl.level}/${levels.length}`;
+            document.getElementById('target-title').innerText = lvl.name;
+            document.getElementById('target-desc').innerText = lvl.desc;
+
+            showHint = false;
+            document.getElementById('hint-btn-text').innerText = "Підказка";
+            document.getElementById('target-hint-box').classList.add('hidden');
+
+            const overlay = document.getElementById('level-success-overlay');
+            if (overlay) overlay.classList.add('hidden');
+
+            while(targetMeshGroup.children.length > 0) targetMeshGroup.remove(targetMeshGroup.children[0]);
+            
+            const targetShape = getShapeByName(lvl.shape);
+            const targetGeo = new THREE.ExtrudeGeometry(targetShape, {
+                depth: lvl.depth,
+                bevelEnabled: lvl.bevel > 0,
+                bevelThickness: lvl.bevel,
+                bevelSize: lvl.bevel * 0.8,
+                bevelSegments: 4
+            });
+            targetGeo.center();
+            const targetMesh = new THREE.Mesh(targetGeo, new THREE.MeshStandardMaterial({ color: lvl.color, roughness: 0.3, metalness: 0.2 }));
+            targetMeshGroup.add(targetMesh);
+            targetMeshGroup.rotation.set(0.4, 0.4, 0);
+
+            document.getElementById('ch-slider-depth').value = 1.0;
+            document.getElementById('ch-slider-bevel').value = 0.0;
+            document.getElementById('ch-select-shape').value = 'square';
+
+            const nextBtn = document.getElementById('btn-next-level');
+            const nextBtnText = document.getElementById('btn-next-text');
+            
+            nextBtn.disabled = true;
+            nextBtn.classList.add('bg-gray-700', 'text-gray-400', 'cursor-not-allowed');
+            nextBtn.classList.remove('bg-blender-accent', 'hover:bg-blender-accentHover', 'text-white', 'pulse-glow');
+
+            if (currentLevelIdx === levels.length - 1) {
+                nextBtnText.innerText = "Завершити практику 🏆";
+            } else {
+                nextBtnText.innerText = "Наступне завдання";
+            }
+
+            updateChallengeStudentMesh();
+        }
+
+        function updateChallengeStudentMesh() {
+            if (!studentMeshGroup) return;
+            while(studentMeshGroup.children.length > 0) studentMeshGroup.remove(studentMeshGroup.children[0]);
+
+            const depth = parseFloat(document.getElementById('ch-slider-depth').value);
+            const bevel = parseFloat(document.getElementById('ch-slider-bevel').value);
+            const shapeName = document.getElementById('ch-select-shape').value;
+
+            document.getElementById('ch-val-depth').innerText = depth.toFixed(1);
+            document.getElementById('ch-val-bevel').innerText = bevel.toFixed(2);
+
+            const shape = getShapeByName(shapeName);
+            const geo = new THREE.ExtrudeGeometry(shape, {
+                depth: depth,
+                bevelEnabled: bevel > 0,
+                bevelThickness: bevel,
+                bevelSize: bevel * 0.8,
+                bevelSegments: 4
+            });
+            geo.center();
+
+            const studentMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xe27b14, roughness: 0.3, metalness: 0.2 }));
+            studentMeshGroup.add(studentMesh);
+            studentMeshGroup.rotation.set(0.4, 0.4, 0);
+
+            calculateMatchScore(depth, bevel, shapeName);
+        }
+
+        function calculateMatchScore(studentDepth, studentBevel, studentShape) {
+            const target = levels[currentLevelIdx];
+            
+            if (studentShape !== target.shape) {
+                updateScoreUI(0);
+                return;
+            }
+
+            const depthDiff = Math.abs(studentDepth - target.depth);
+            const bevelDiff = Math.abs(studentBevel - target.bevel);
+
+            const maxDepthErr = 4.0;
+            const maxBevelErr = 0.5;
+
+            const depthScore = Math.max(0, 1 - (depthDiff / maxDepthErr));
+            const bevelScore = Math.max(0, 1 - (bevelDiff / maxBevelErr));
+
+            let totalScore = Math.round(((depthScore * 0.6) + (bevelScore * 0.4)) * 100);
+
+            if (depthDiff <= 0.05 && bevelDiff <= 0.025) {
+                totalScore = 100;
+            }
+
+            updateScoreUI(totalScore);
+        }
+
+        function updateScoreUI(score) {
+            const scoreEl = document.getElementById('match-score');
+            scoreEl.innerText = `${score}%`;
+
+            const nextBtn = document.getElementById('btn-next-level');
+            const overlay = document.getElementById('level-success-overlay');
+
+            if (score >= 85) {
+                scoreEl.className = "text-2xl font-bold font-mono text-green-400 animate-pulse";
+                nextBtn.disabled = false;
+                nextBtn.classList.remove('bg-gray-700', 'text-gray-400', 'cursor-not-allowed');
+                nextBtn.classList.add('bg-blender-accent', 'hover:bg-blender-accentHover', 'text-white', 'pulse-glow');
+                
+                if (overlay) overlay.classList.remove('hidden');
+
+                if (currentLevelIdx === levels.length - 1 && !hasTriggeredFinalCelebration) {
+                    hasTriggeredFinalCelebration = true;
+                    setTimeout(showCompletionModal, 500);
+                }
+            } else {
+                if (overlay) overlay.classList.add('hidden');
+                nextBtn.disabled = true;
+                nextBtn.classList.add('bg-gray-700', 'text-gray-400', 'cursor-not-allowed');
+                nextBtn.classList.remove('bg-blender-accent', 'hover:bg-blender-accentHover', 'text-white', 'pulse-glow');
+
+                if (score >= 60) {
+                    scoreEl.className = "text-2xl font-bold font-mono text-yellow-400";
+                } else {
+                    scoreEl.className = "text-2xl font-bold font-mono text-red-400";
+                }
+            }
+        }
+
+        function nextChallengeLevel() {
+            if (currentLevelIdx < levels.length - 1) {
+                loadChallengeLevel(currentLevelIdx + 1);
+            } else {
+                showCompletionModal();
+            }
+        }
+
+        function showCompletionModal() {
+            const modal = document.getElementById('completion-modal');
+            if (modal) modal.classList.remove('hidden');
+            triggerConfetti();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('completion-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function goToQuizFromModal() {
+            closeModal();
+            switchTab('quiz');
+        }
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 130,
+                    spread: 85,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        // --- TAB 3: QUIZ LOGIC ---
+        const quizQuestions = [
+            {
+                q: "Яку головну дію виконує операція Extrude (Видавлювання)?",
+                options: [
+                    "Зменшує кількість полігонів 3D-моделі",
+                    "Витягує 2D-елемент у просторі, створюючи об'єм та нові бічні грані",
+                    "Видаляє вибрані точки та поверхні",
+                    "Змінює колір та текстуру об'єкта"
+                ],
+                correct: 1,
+                explanation: "Extrude бере плоский 2D-контур або грань і витягує її, утворюючи нове 3D-тіло з бічними стінками."
+            },
+            {
+                q: "Яка гаряча клавіша відповідає за Extrude у більшості 3D-пакетів (наприклад, Blender)?",
+                options: [
+                    "Клавіша 'X'",
+                    "Клавіша 'E'",
+                    "Клавіша 'S'",
+                    "Клавіша 'Ctrl + Z'"
+                ],
+                correct: 1,
+                explanation: "Клавіша E (від Extrude) є найпопулярнішою гарячою клавішею для видавлювання у Blender."
+            },
+            {
+                q: "Для чого використовується параметр Bevel (Фаска) при екструзії?",
+                options: [
+                    "Щоб розрізати об'єкт навпіл",
+                    "Щоб зробити об'єкт повністю прозорим",
+                    "Щоб зрізати або згладити гострі краї об'єкта для більшої реалістичності",
+                    "Щоб збільшити швидкість рендеру"
+                ],
+                correct: 2,
+                explanation: "Bevel додає скошені кути (фаски) на гострі ребра, що робить 3D-об'єкти природними, оскільки в реальному світі ідеально гострих кутів майже немає."
+            },
+            {
+                q: "Що станеться, якщо зробити Extrude плоскої грані, не переміщуючи її?",
+                options: [
+                    "Нічого не станеться",
+                    "Створиться дубльована поверхня на тому ж місці (Zero-length faces), що може спричинити артефакти",
+                    "Об'єкт автоматично видалиться",
+                    "Програма закриється з помилкою"
+                ],
+                correct: 1,
+                explanation: "При натисканні E створюються нові грані. Якщо їх не перемістити, утворюється накладання полігонів (Z-fighting)."
+            }
+        ];
+
+        let userAnswers = Array(quizQuestions.length).fill(null);
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizQuestions.forEach((q, qIdx) => {
+                const card = document.createElement('div');
+                card.className = "bg-blender-panel p-5 rounded-xl border border-blender-border space-y-3";
+
+                let optionsHTML = '';
+                q.options.forEach((opt, oIdx) => {
+                    const isSelected = userAnswers[qIdx] === oIdx;
+                    let btnStyle = "bg-blender-dark border-blender-border text-gray-300 hover:border-gray-500";
+                    
+                    if (userAnswers[qIdx] !== null) {
+                        if (oIdx === q.correct) {
+                            btnStyle = "bg-green-900/40 border-green-500 text-green-200 font-semibold";
+                        } else if (isSelected) {
+                            btnStyle = "bg-red-900/40 border-red-500 text-red-200";
+                        }
+                    }
+
+                    optionsHTML += `
+                        <button onclick="selectAnswer(${qIdx}, ${oIdx})" ${userAnswers[qIdx] !== null ? 'disabled' : ''} 
+                            class="w-full text-left p-3 rounded-lg border text-xs sm:text-sm transition flex items-center gap-3 ${btnStyle}">
+                            <span class="w-5 h-5 rounded-full border border-gray-500 flex items-center justify-center text-xs font-mono">
+                                ${String.fromCharCode(65 + oIdx)}
+                            </span>
+                            <span>${opt}</span>
+                        </button>
+                    `;
+                });
+
+                let explanationHTML = '';
+                if (userAnswers[qIdx] !== null) {
+                    explanationHTML = `
+                        <div class="mt-2 p-3 bg-blender-dark/80 rounded-lg text-xs text-gray-300 border-l-4 border-blender-blue">
+                            <strong class="text-blender-blue">Пояснення:</strong> ${q.explanation}
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <h3 class="text-sm sm:text-base font-bold text-white">${qIdx + 1}. ${q.q}</h3>
+                    <div class="space-y-2">${optionsHTML}</div>
+                    ${explanationHTML}
+                `;
+                container.appendChild(card);
+            });
+
+            updateQuizScore();
+        }
+
+        function selectAnswer(qIdx, oIdx) {
+            userAnswers[qIdx] = oIdx;
+            renderQuiz();
+        }
+
+        function updateQuizScore() {
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            if (answeredCount === 0) return;
+
+            const correctCount = userAnswers.reduce((acc, ans, idx) => {
+                return ans === quizQuestions[idx].correct ? acc + 1 : acc;
+            }, 0);
+
+            const scoreText = document.getElementById('quiz-score-text');
+            scoreText.innerText = `Правильно: ${correctCount} з ${quizQuestions.length}`;
+            if (correctCount === quizQuestions.length) {
+                scoreText.className = "text-lg font-bold text-green-400";
+            } else {
+                scoreText.className = "text-lg font-bold text-yellow-400";
+            }
+        }
+
+        function restartQuiz() {
+            userAnswers = Array(quizQuestions.length).fill(null);
+            document.getElementById('quiz-score-text').innerText = 'Пройдіть всі питання';
+            document.getElementById('quiz-score-text').className = 'text-lg font-bold text-white';
+            renderQuiz();
+        }
+
+        // Centralized Resize Handler
+        function handleResize() {
+            const sbContainer = document.getElementById('sandbox-canvas-container');
+            if (sbContainer && sbCamera && sbRenderer && sbContainer.clientWidth > 0 && sbContainer.clientHeight > 0) {
+                sbCamera.aspect = sbContainer.clientWidth / sbContainer.clientHeight;
+                sbCamera.updateProjectionMatrix();
+                sbRenderer.setSize(sbContainer.clientWidth, sbContainer.clientHeight);
+            }
+            const tContainer = document.getElementById('target-canvas-container');
+            if (tContainer && targetCamera && targetRenderer && tContainer.clientWidth > 0 && tContainer.clientHeight > 0) {
+                targetCamera.aspect = tContainer.clientWidth / tContainer.clientHeight;
+                targetCamera.updateProjectionMatrix();
+                targetRenderer.setSize(tContainer.clientWidth, tContainer.clientHeight);
+            }
+            const sContainer = document.getElementById('challenge-canvas-container');
+            if (sContainer && studentCamera && studentRenderer && sContainer.clientWidth > 0 && sContainer.clientHeight > 0) {
+                studentCamera.aspect = sContainer.clientWidth / sContainer.clientHeight;
+                studentCamera.updateProjectionMatrix();
+                studentRenderer.setSize(sContainer.clientWidth, sContainer.clientHeight);
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        window.onload = function() {
+            initSandbox();
+            initChallenge();
+            renderQuiz();
+            resetSandboxCamera();
+
+            // Observe container size changes dynamically
+            if (typeof ResizeObserver !== 'undefined') {
+                const ro = new ResizeObserver(() => handleResize());
+                ['sandbox-canvas-container', 'target-canvas-container', 'challenge-canvas-container'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) ro.observe(el);
+                });
+            }
+        };
+    </script>
+</body>
+</html>
